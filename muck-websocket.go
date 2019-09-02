@@ -14,10 +14,10 @@ import (
 )
 
 // Flags
-var addr = flag.String("addr", "localhost:8000", "http service address")
-var muckHost = flag.String("muck", "localhost:4021",
+var addr = flag.String("addr", "localhost:8181", "http service address")
+var muckHost = flag.String("muck", "localhost:6661",
 	"host and port for proxied muck")
-var useTLS = flag.Bool("muck-ssl", false,
+var useTLS = flag.Bool("muck-ssl", true,
 	"whether to connect to the muck with SSL.")
 
 // Telnet commands
