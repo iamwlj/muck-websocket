@@ -14,7 +14,7 @@ import (
 )
 
 // Flags
-var addr = flag.String("addr", "localhost:8181", "http service address")
+var addr = flag.String("addr", ":8181", "http service address")
 var muckHost = flag.String("muck", "localhost:6661",
 	"host and port for proxied muck")
 var useTLS = flag.Bool("muck-ssl", true,
