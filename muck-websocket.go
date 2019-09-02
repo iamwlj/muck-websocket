@@ -75,6 +75,7 @@ func SendToWs(con *websocket.Conn, s []byte) error {
 	idx := 0
 	var c byte
 	sz := len(s)
+	log.Printf("SendToWs:%d", sz)
 	for idx < sz {
 		c = s[idx]
 		switch state {
@@ -85,9 +86,10 @@ func SendToWs(con *websocket.Conn, s []byte) error {
 				if idx > start {
 					bytes, _ := GbkToUtf8(s[start:idx])
 					if err := con.WriteMessage(websocket.TextMessage, bytes); err != nil {
-// 						log.Printf("Error sending to ws(%s): %v", r.RemoteAddr, err)
+						log.Printf("Error sending to ws : %v", err)
 						return err
 					}
+					log.Printf("send[%d:%d]", start, idx)
 					start = idx
 				}
 			}
@@ -118,9 +120,10 @@ func SendToWs(con *websocket.Conn, s []byte) error {
 	if idx > start {
 		bytes, _ := GbkToUtf8(s[start:idx])
 		if err := con.WriteMessage(websocket.TextMessage, bytes); err != nil {
-// 			log.Printf("Error sending to ws(%s): %v", r.RemoteAddr, err)
+			log.Printf("Error sending to ws: %v", err)
 			return err
 		}
+		log.Printf("send[%d:%d]", start, idx)
 		start = idx
 	}
 	return nil
