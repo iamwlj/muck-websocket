@@ -245,7 +245,7 @@ func telnetProxy(w http.ResponseWriter, r *http.Request) {
 	go func() {
 		defer once.Do(func() { wg.Done() })
 		for {
-			bytes := make([]byte, 10240)
+			bytes := make([]byte, 1024)
 			if _, err := t.Read(bytes); err != nil {
 				log.Printf("Error reading from muck for %s: %v",
 					r.Host, err)
