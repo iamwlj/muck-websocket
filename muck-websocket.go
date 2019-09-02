@@ -37,8 +37,8 @@ import (
 //     return d, nil
 // }
 
-var enc mahonia.Encoder = mahonia.NewEncoder("GB18030")
-var dec mahonia.Decoder = mahonia.NewDecoder("GB18030")
+var enc mahonia.Encoder = mahonia.NewEncoder("Big5")
+var dec mahonia.Decoder = mahonia.NewDecoder("Big5")
 
 func GbkToUtf8(s []byte) ([]byte, error) {
 // 	return s, nill
