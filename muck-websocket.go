@@ -75,7 +75,7 @@ func SendToWs(con *websocket.Conn, s []byte) error {
 	idx := 0
 	var c byte
 	sz := len(s)
-	log.Printf("SendToWs:%d", sz)
+	log.Printf("SendToWs:%d,%v", sz, s)
 	for idx < sz {
 		c = s[idx]
 		switch state {
