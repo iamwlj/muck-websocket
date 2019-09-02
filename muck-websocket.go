@@ -197,7 +197,7 @@ func main() {
 	// 将GBK转换为UTF-8
 	utf8 := dec.ConvertString(string(gbkBytes))
 // 	fmt.Println(utf8)
-	log.Printf("starting...%s", utf8)
+	log.Printf("starting...[%s] [%s]", utf8, "你好")
 
 	http.HandleFunc("/", telnetProxy)
 	if !useWss {
