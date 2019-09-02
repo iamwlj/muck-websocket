@@ -73,7 +73,8 @@ func SendToWs(con *websocket.Conn, s []byte) error {
 	start := 0
 	idx := 0
 	var c byte
-	for {
+	sz := len(s)
+	for idx < s {
 		c = s[idx]
 		switch state {
 		case 0:
