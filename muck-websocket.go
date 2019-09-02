@@ -48,11 +48,13 @@ func openTelnet() (t *telnet.Telnet, err error) {
 }
 
 func telnetProxy(w http.ResponseWriter, r *http.Request) {
+	log.Printf("telnetProxy %s", r.URL.Path);
 	if r.URL.Path != "/" {
 		http.Error(w, "Not found", 404)
 		return
 	}
 	if r.Method != "GET" {
+		log.Printf("telnetProxy not GET");
 		http.Error(w, "Method not allowed", 405)
 		return
 	}
