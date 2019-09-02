@@ -139,6 +139,7 @@ func main() {
 
 	http.HandleFunc("/", telnetProxy)
 	if !*useTLS {
+		log.Printf("ListenAndServe:%s", *addr);
 		err := http.ListenAndServe(*addr, nil)
 		if err != nil {
 			log.Fatal("ListenAndServe: ", err)
@@ -146,6 +147,7 @@ func main() {
 	} else {
 		// Use this instead if you want to do SSL. You'll need to use `openssl`
 		// to generate "cert.pem" and "key.pem" files.
+		log.Printf("ListenAndServeTLS:%s", *addr);
 		err := http.ListenAndServeTLS(*addr, "conf/cert.pem", "conf/key.pem", nil)
 		if err != nil {
 			log.Fatal("ListenAndServe: ", err)
