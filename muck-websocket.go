@@ -66,6 +66,7 @@ const (
 	cmdDont = 254
 
 	cmdIAC = 255
+	cmdSBIAC = 1
 )
 
 func SendToWs(con *websocket.Conn, s []byte) error {
@@ -92,17 +93,24 @@ func SendToWs(con *websocket.Conn, s []byte) error {
 			}
 		case cmdIAC:
 			switch c {
-			case cmdSE:
-				state = cmdSE
+			case cmdSB:
+				state = cmdSB
 			default:
 				state = cmdDo
 			}
 		case cmdDo:
 			state = 0
-		case cmdSE:
+		case cmdSB:
 			switch c {
 			case cmdIAC:
+				state = cmdSBIAC
+			}
+		case cmdSBIAC:
+			switch c {
+			case cmdSE:
 				state = 0
+			default:
+				state = cmdSB
 			}
 		}
 		idx++
