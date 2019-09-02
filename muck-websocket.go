@@ -68,7 +68,7 @@ const (
 	cmdIAC = 255
 )
 
-func SendToWs(s []byte) error {
+func (c *websocket.Conn)SendToWs(s []byte) error {
 	state := 0
 	start := 0
 	idx := 0
@@ -239,18 +239,18 @@ func telnetProxy(w http.ResponseWriter, r *http.Request) {
 					r.Host, err)
 				break
 			}
-// 			if err := c.WriteMessage(websocket.TextMessage, bytes); err != nil {
-// 				log.Printf("Error sending to ws(%s): %v", r.RemoteAddr, err)
-// 				break
-// 			}
-			if rbytes, err := GbkToUtf8(bytes); err == nil {
-				if err := c.WriteMessage(websocket.TextMessage, rbytes); err != nil {
-					log.Printf("Error sending to ws(%s): %v", r.RemoteAddr, err)
-					break
-				}
-			} else {
-				log.Printf("Error GbkToUtf8: %v", err)
+			if err := c.SendToWs(bytes); err != nil {
+				log.Printf("Error sending to ws(%s): %v", r.RemoteAddr, err)
+				break
 			}
+// 			if rbytes, err := GbkToUtf8(bytes); err == nil {
+// 				if err := c.WriteMessage(websocket.TextMessage, rbytes); err != nil {
+// 					log.Printf("Error sending to ws(%s): %v", r.RemoteAddr, err)
+// 					break
+// 				}
+// 			} else {
+// 				log.Printf("Error GbkToUtf8: %v", err)
+// 			}
 		}
 	}()
 
