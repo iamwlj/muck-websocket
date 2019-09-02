@@ -41,7 +41,8 @@ var enc mahonia.Encoder = mahonia.NewEncoder("GB18030")
 var dec mahonia.Decoder = mahonia.NewDecoder("GB18030")
 
 func GbkToUtf8(s []byte) ([]byte, error) {
-	return []byte(dec.ConvertString(string(s))), nil
+	return s, nill
+// 	return []byte(dec.ConvertString(string(s))), nil
 }
 
 func Utf8ToGbk(s []byte) ([]byte, error) {
