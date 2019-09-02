@@ -41,15 +41,17 @@ var enc mahonia.Encoder = mahonia.NewEncoder("GB18030")
 var dec mahonia.Decoder = mahonia.NewDecoder("GB18030")
 
 func GbkToUtf8(s []byte) ([]byte, error) {
-	return s, nil
-// 	res := dec.ConvertString(string(s))
+// 	return s, nil
+	res := dec.ConvertString(string(s))
 // 	// log.Printf("convert [%s] -> [%s]", string(s), res)
-// 	return []byte(res), nil
+	return []byte(res), nil
 }
 
 func Utf8ToGbk(s []byte) ([]byte, error) {
 	return []byte(enc.ConvertString(string(s))), nil
 }
+
+var welcomeMsg string
 
 const useWss = true
 
@@ -114,6 +116,8 @@ func telnetProxy(w http.ResponseWriter, r *http.Request) {
 	}
 	defer t.Close()
 
+	c.WriteMessage(websocket.TextMessage, []byte(welcomeMsg))
+	
 	// Send over codes containing the user's real ip.
 	// 1. Indicate our intention.
 	t.SendCommand(telnet.WILL)
@@ -198,6 +202,8 @@ func main() {
 	utf8 := dec.ConvertString(string(gbkBytes))
 // 	fmt.Println(utf8)
 	log.Printf("starting...[%s] [%s]", utf8, "你好")
+	
+	welcomeMsg = utf8
 
 	http.HandleFunc("/", telnetProxy)
 	if !useWss {
