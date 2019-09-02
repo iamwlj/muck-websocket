@@ -246,14 +246,15 @@ func telnetProxy(w http.ResponseWriter, r *http.Request) {
 		defer once.Do(func() { wg.Done() })
 		for {
 			bytes := make([]byte, 1024)
-			if _, err := t.Read(bytes); err != nil {
+			if n, err := t.Read(bytes); err != nil {
 				log.Printf("Error reading from muck for %s: %v",
 					r.Host, err)
 				break
-			}
-			if err := SendToWs(c, bytes); err != nil {
-				log.Printf("Error sending to ws(%s): %v", r.RemoteAddr, err)
-				break
+			} else {
+				if err := SendToWs(c, bytes[:n]); err != nil {
+					log.Printf("Error sending to ws(%s): %v", r.RemoteAddr, err)
+					break
+				}
 			}
 // 			if rbytes, err := GbkToUtf8(bytes); err == nil {
 // 				if err := c.WriteMessage(websocket.TextMessage, rbytes); err != nil {
