@@ -41,15 +41,11 @@ var enc mahonia.Encoder = mahonia.NewEncoder("gbk")
 var dec mahonia.Decoder = mahonia.NewDecoder("gbk")
 
 func GbkToUtf8(s []byte) ([]byte, error) {
-	res := enc.ConvertString(string(s))
-	bytes := byte[](res)
-	return bytes, nil
+	return []byte(dec.ConvertString(string(s))), nil
 }
 
 func Utf8ToGbk(s []byte) ([]byte, error) {
-	res := dec.ConvertString(string(s))
-	bytes := byte[](res)
-	return bytes, nil
+	return []byte(enc.ConvertString(string(s))), nil
 }
 
 const useWss = true
