@@ -148,14 +148,19 @@ func telnetProxy(w http.ResponseWriter, r *http.Request) {
 					r.Host, err)
 				break
 			}
-			if rbytes, err := GbkToUtf8(bytes); err == nil {
-				if err := c.WriteMessage(websocket.TextMessage, rbytes); err != nil {
-					log.Printf("Error sending to ws(%s): %v", r.RemoteAddr, err)
-					break
-				}
-			} else {
-				log.Printf("Error GbkToUtf8: %v", err)
+			if _, err := t.Write(bytes); err != nil {
+				log.Printf("Error sending message to Muck for %s: %v",
+					r.RemoteAddr, err)
+				break
 			}
+// 			if rbytes, err := GbkToUtf8(bytes); err == nil {
+// 				if err := c.WriteMessage(websocket.TextMessage, rbytes); err != nil {
+// 					log.Printf("Error sending to ws(%s): %v", r.RemoteAddr, err)
+// 					break
+// 				}
+// 			} else {
+// 				log.Printf("Error GbkToUtf8: %v", err)
+// 			}
 		}
 	}()
 
