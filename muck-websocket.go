@@ -67,6 +67,9 @@ const (
 
 	cmdIAC = 255
 	cmdSBIAC = 1
+	cmdESC = 27
+	cmdESC2 = 91
+	cmdM = 109
 )
 
 func SendToWs(con *websocket.Conn, s []byte) error {
