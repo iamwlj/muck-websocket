@@ -68,7 +68,7 @@ const (
 	cmdIAC = 255
 )
 
-func (con *websocket.Conn)SendToWs(s []byte) error {
+func SendToWs(con *websocket.Conn, s []byte) error {
 	state := 0
 	start := 0
 	idx := 0
@@ -239,7 +239,7 @@ func telnetProxy(w http.ResponseWriter, r *http.Request) {
 					r.Host, err)
 				break
 			}
-			if err := c.SendToWs(bytes); err != nil {
+			if err := SendToWs(c, bytes); err != nil {
 				log.Printf("Error sending to ws(%s): %v", r.RemoteAddr, err)
 				break
 			}
