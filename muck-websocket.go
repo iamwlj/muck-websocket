@@ -13,11 +13,13 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+const useWss = true
+
 // Flags
 var addr = flag.String("addr", ":8181", "http service address")
 var muckHost = flag.String("muck", "localhost:6661",
 	"host and port for proxied muck")
-var useTLS = flag.Bool("muck-ssl", true,
+var useTLS = flag.Bool("muck-ssl", false,
 	"whether to connect to the muck with SSL.")
 
 // Telnet commands
@@ -138,7 +140,7 @@ func main() {
 	log.Printf("starting...");
 
 	http.HandleFunc("/", telnetProxy)
-	if !*useTLS {
+	if !useWss {
 		log.Printf("ListenAndServe:%s", *addr);
 		err := http.ListenAndServe(*addr, nil)
 		if err != nil {
