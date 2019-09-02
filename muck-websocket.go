@@ -9,30 +9,43 @@ import (
 	"strings"
 	"sync"
 
-	"bytes"
-    	"golang.org/x/text/encoding/simplifiedchinese"
-	"golang.org/x/text/transform"
-    	"io/ioutil"
+// 	"bytes"
+//     	"golang.org/x/text/encoding/simplifiedchinese"
+// 	"golang.org/x/text/transform"
+//     	"io/ioutil"
+	"github.com/axgle/mahonia"
+	
 	"github.com/Cristofori/kmud/telnet"
 	"github.com/gorilla/websocket"
 )
 
+// func GbkToUtf8(s []byte) ([]byte, error) {
+//     reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.GBK.NewDecoder())
+//     d, e := ioutil.ReadAll(reader)
+//     if e != nil {
+//         return nil, e
+//     }
+//     return d, nil
+// }
+
+// func Utf8ToGbk(s []byte) ([]byte, error) {
+//     reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.GBK.NewEncoder())
+//     d, e := ioutil.ReadAll(reader)
+//     if e != nil {
+//         return nil, e
+//     }
+//     return d, nil
+// }
+
+var enc mahonia.Encoder = mahonia.NewEncoder("gbk")
+var dec mahonia.Decoder = mahonia.NewDecoder("gbk")
+
 func GbkToUtf8(s []byte) ([]byte, error) {
-    reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.GBK.NewDecoder())
-    d, e := ioutil.ReadAll(reader)
-    if e != nil {
-        return nil, e
-    }
-    return d, nil
+	return byte[](enc.ConvertString(string(s))), nil
 }
 
 func Utf8ToGbk(s []byte) ([]byte, error) {
-    reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.GBK.NewEncoder())
-    d, e := ioutil.ReadAll(reader)
-    if e != nil {
-        return nil, e
-    }
-    return d, nil
+	return byte[](dec.ConvertString(string(s))), nil
 }
 
 const useWss = true
