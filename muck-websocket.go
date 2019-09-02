@@ -41,10 +41,10 @@ var enc mahonia.Encoder = mahonia.NewEncoder("GB18030")
 var dec mahonia.Decoder = mahonia.NewDecoder("GB18030")
 
 func GbkToUtf8(s []byte) ([]byte, error) {
-// 	return s, nill
-	res := dec.ConvertString(string(s))
-	// log.Printf("convert [%s] -> [%s]", string(s), res)
-	return []byte(res), nil
+	return s, nill
+// 	res := dec.ConvertString(string(s))
+// 	// log.Printf("convert [%s] -> [%s]", string(s), res)
+// 	return []byte(res), nil
 }
 
 func Utf8ToGbk(s []byte) ([]byte, error) {
