@@ -51,6 +51,72 @@ func Utf8ToGbk(s []byte) ([]byte, error) {
 	return []byte(enc.ConvertString(string(s))), nil
 }
 
+const (
+	cmdSE   = 240
+	cmdNOP  = 241
+	cmdData = 242
+
+	cmdBreak = 243
+	cmdGA    = 249
+	cmdSB    = 250
+
+	cmdWill = 251
+	cmdWont = 252
+	cmdDo   = 253
+	cmdDont = 254
+
+	cmdIAC = 255
+)
+
+func SendToWs(s []byte) error {
+	state := 0
+	start := 0
+	idx := 0
+	var c byte
+	for {
+		c = s[idx]
+		switch state {
+		case 0:
+			switch c {
+			case cmdIAC:
+				state = cmdIAC
+				if idx > start {
+					bytes, _ := GbkToUtf8(s[start:idx])
+					if err := c.WriteMessage(websocket.TextMessage, bytes); err != nil {
+						log.Printf("Error sending to ws(%s): %v", r.RemoteAddr, err)
+						return err
+					}
+					start = idx
+				}
+			}
+		case cmdIAC:
+			switch c {
+			case cmdSE:
+				state = cmdSE
+			default:
+				state = cmdDo
+			}
+		case cmdDo:
+			state = 0
+		case cmdSE:
+			switch c {
+			case cmdIAC:
+				state = 0
+			}
+		}
+		idx++
+	}
+	if idx > start {
+		bytes, _ := GbkToUtf8(s[start:idx])
+		if err := c.WriteMessage(websocket.TextMessage, bytes); err != nil {
+			log.Printf("Error sending to ws(%s): %v", r.RemoteAddr, err)
+			return err
+		}
+		start = idx
+	}
+	return nil
+}
+
 var welcomeMsg string
 
 const useWss = true
