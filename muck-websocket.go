@@ -135,6 +135,7 @@ func telnetProxy(w http.ResponseWriter, r *http.Request) {
 func main() {
 	flag.Parse()
 	log.SetFlags(0)
+	log.Printf("starting...");
 
 	http.HandleFunc("/", telnetProxy)
 	if !*useTLS {
