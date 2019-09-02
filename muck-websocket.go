@@ -143,7 +143,7 @@ func main() {
 	} else {
 		// Use this instead if you want to do SSL. You'll need to use `openssl`
 		// to generate "cert.pem" and "key.pem" files.
-		err := http.ListenAndServeTLS(*addr, "cert.pem", "key.pem", nil)
+		err := http.ListenAndServeTLS(*addr, "conf/cert.pem", "conf/key.pem", nil)
 		if err != nil {
 			log.Fatal("ListenAndServe: ", err)
 		}
