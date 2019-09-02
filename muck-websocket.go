@@ -153,7 +153,7 @@ func telnetProxy(w http.ResponseWriter, r *http.Request) {
 					r.Host, err)
 				break
 			}
-			if err := c.WriteMessage(websocket.TextMessage, rbytes); err != nil {
+			if err := c.WriteMessage(websocket.TextMessage, bytes); err != nil {
 				log.Printf("Error sending to ws(%s): %v", r.RemoteAddr, err)
 				break
 			}
