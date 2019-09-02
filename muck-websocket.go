@@ -9,9 +9,31 @@ import (
 	"strings"
 	"sync"
 
+	"bytes"
+    	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/transform"
+    	"io/ioutil"
 	"github.com/Cristofori/kmud/telnet"
 	"github.com/gorilla/websocket"
 )
+
+func GbkToUtf8(s []byte) ([]byte, error) {
+    reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.GBK.NewDecoder())
+    d, e := ioutil.ReadAll(reader)
+    if e != nil {
+        return nil, e
+    }
+    return d, nil
+}
+
+func Utf8ToGbk(s []byte) ([]byte, error) {
+    reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.GBK.NewEncoder())
+    d, e := ioutil.ReadAll(reader)
+    if e != nil {
+        return nil, e
+    }
+    return d, nil
+}
 
 const useWss = true
 
@@ -103,11 +125,15 @@ func telnetProxy(w http.ResponseWriter, r *http.Request) {
 				log.Printf("Error reading from ws(%s): %v", r.RemoteAddr, err)
 				break
 			}
-			// TODO: Partial writes.
-			if _, err := t.Write(bytes); err != nil {
-				log.Printf("Error sending message to Muck for %s: %v",
-					r.RemoteAddr, err)
-				break
+			if rbytes, err := Utf8ToGbk(bytes); err == nil {
+				// TODO: Partial writes.
+				if _, err := t.Write(rbytes); err != nil {
+					log.Printf("Error sending message to Muck for %s: %v",
+						r.RemoteAddr, err)
+					break
+				}
+			} else {
+				log.Printf("Error Utf8ToGbk: %v", err)
 			}
 		}
 	}()
@@ -122,9 +148,13 @@ func telnetProxy(w http.ResponseWriter, r *http.Request) {
 					r.Host, err)
 				break
 			}
-			if err := c.WriteMessage(websocket.TextMessage, bytes); err != nil {
-				log.Printf("Error sending to ws(%s): %v", r.RemoteAddr, err)
-				break
+			if rbytes, err := GbkToUtf8(bytes); err == nil {
+				if err := c.WriteMessage(websocket.TextMessage, rbytes); err != nil {
+					log.Printf("Error sending to ws(%s): %v", r.RemoteAddr, err)
+					break
+				}
+			} else {
+				log.Printf("Error GbkToUtf8: %v", err)
 			}
 		}
 	}()
