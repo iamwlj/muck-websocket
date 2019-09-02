@@ -68,7 +68,7 @@ const (
 	cmdIAC = 255
 )
 
-func (c *websocket.Conn)SendToWs(s []byte) error {
+func (con *websocket.Conn)SendToWs(s []byte) error {
 	state := 0
 	start := 0
 	idx := 0
@@ -82,7 +82,7 @@ func (c *websocket.Conn)SendToWs(s []byte) error {
 				state = cmdIAC
 				if idx > start {
 					bytes, _ := GbkToUtf8(s[start:idx])
-					if err := c.WriteMessage(websocket.TextMessage, bytes); err != nil {
+					if err := con.WriteMessage(websocket.TextMessage, bytes); err != nil {
 						log.Printf("Error sending to ws(%s): %v", r.RemoteAddr, err)
 						return err
 					}
@@ -108,7 +108,7 @@ func (c *websocket.Conn)SendToWs(s []byte) error {
 	}
 	if idx > start {
 		bytes, _ := GbkToUtf8(s[start:idx])
-		if err := c.WriteMessage(websocket.TextMessage, bytes); err != nil {
+		if err := con.WriteMessage(websocket.TextMessage, bytes); err != nil {
 			log.Printf("Error sending to ws(%s): %v", r.RemoteAddr, err)
 			return err
 		}
