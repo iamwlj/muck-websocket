@@ -138,21 +138,21 @@ func telnetProxy(w http.ResponseWriter, r *http.Request) {
 				log.Printf("Error reading from ws(%s): %v", r.RemoteAddr, err)
 				break
 			}
-			if _, err := t.Write(bytes); err != nil {
-				log.Printf("Error sending message to Muck for %s: %v",
-					r.RemoteAddr, err)
-				break
-			}
-// 			if rbytes, err := Utf8ToGbk(bytes); err == nil {
-// 				// TODO: Partial writes.
-// 				if _, err := t.Write(rbytes); err != nil {
-// 					log.Printf("Error sending message to Muck for %s: %v",
-// 						r.RemoteAddr, err)
-// 					break
-// 				}
-// 			} else {
-// 				log.Printf("Error Utf8ToGbk: %v", err)
+// 			if _, err := t.Write(bytes); err != nil {
+// 				log.Printf("Error sending message to Muck for %s: %v",
+// 					r.RemoteAddr, err)
+// 				break
 // 			}
+			if rbytes, err := Utf8ToGbk(bytes); err == nil {
+				// TODO: Partial writes.
+				if _, err := t.Write(rbytes); err != nil {
+					log.Printf("Error sending message to Muck for %s: %v",
+						r.RemoteAddr, err)
+					break
+				}
+			} else {
+				log.Printf("Error Utf8ToGbk: %v", err)
+			}
 		}
 	}()
 
