@@ -192,7 +192,12 @@ func telnetProxy(w http.ResponseWriter, r *http.Request) {
 func main() {
 	flag.Parse()
 	log.SetFlags(0)
-	log.Printf("starting...");
+	gbkBytes := []byte{0xC4, 0xE3, 0xBA, 0xC3, 0xA3, 0xAC, 0xCA, 0xC0, 0xBD, 0xE7, 0xA3, 0xA1}
+
+	// 将GBK转换为UTF-8
+	utf8 := dec.ConvertString(string(gbkBytes))
+// 	fmt.Println(utf8)
+	log.Printf("starting...%s", utf8)
 
 	http.HandleFunc("/", telnetProxy)
 	if !useWss {
