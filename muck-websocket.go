@@ -19,6 +19,14 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+import (
+	"regexp"
+)
+
+const ansi = "[\u001B\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[a-zA-Z\\d]*)*)?\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PRZcf-ntqry=><~]))"
+
+var re = regexp.MustCompile(ansi)
+
 // func GbkToUtf8(s []byte) ([]byte, error) {
 //     reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.GBK.NewDecoder())
 //     d, e := ioutil.ReadAll(reader)
@@ -254,7 +262,8 @@ func telnetProxy(w http.ResponseWriter, r *http.Request) {
 					r.Host, err)
 				break
 			} else {
-				if err := SendToWs(c, bytes[:n]); err != nil {
+				new_bytes := re.ReplaceAll(bytes[:n], bytes[]{})
+				if err := SendToWs(c, new_bytes); err != nil {
 					log.Printf("Error sending to ws(%s): %v", r.RemoteAddr, err)
 					break
 				}
