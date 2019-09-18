@@ -262,6 +262,7 @@ func telnetProxy(w http.ResponseWriter, r *http.Request) {
 					r.Host, err)
 				break
 			} else {
+				log.Printf("recv:%v\n", bytes)
 				new_bytes := re.ReplaceAll(bytes[:n], bytes[]{})
 				if err := SendToWs(c, new_bytes); err != nil {
 					log.Printf("Error sending to ws(%s): %v", r.RemoteAddr, err)
