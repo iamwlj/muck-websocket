@@ -209,16 +209,16 @@ func telnetProxy(w http.ResponseWriter, r *http.Request) {
 	
 	// Send over codes containing the user's real ip.
 	// 1. Indicate our intention.
-	t.SendCommand(telnet.WILL)
-	t.Write([]byte{FORWARDED})
+	// t.SendCommand(telnet.WILL)
+	// t.Write([]byte{FORWARDED})
 	// TODO: Use a listener function to confirm whether or not the server supports forwarding.
 	// 2. Negotiate the start of the suboption transmission.
-	t.SendCommand(telnet.SB)
-	t.Write([]byte{FORWARDED})
+	// t.SendCommand(telnet.SB)
+	// t.Write([]byte{FORWARDED})
 	// 3. Send our new hostname.
-	t.Write([]byte(strings.Split(r.RemoteAddr, ":")[0]))
+	// t.Write([]byte(strings.Split(r.RemoteAddr, ":")[0]))
 	// 4. Indicate that we are done sending.
-	t.SendCommand(telnet.SE)
+	// t.SendCommand(telnet.SE)
 	log.Printf("Connection open for '%s'. Proxying.", r.RemoteAddr)
 
 	var wg sync.WaitGroup
