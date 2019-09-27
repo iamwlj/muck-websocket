@@ -9,12 +9,12 @@ import (
 // 	"strings"
 	"sync"
 
-// 	"bytes"
+   Bytes "bytes"
 //     	"golang.org/x/text/encoding/simplifiedchinese"
 // 	"golang.org/x/text/transform"
 //     	"io/ioutil"
 	"github.com/axgle/mahonia"
-	
+
 	"github.com/Cristofori/kmud/telnet"
 	"github.com/gorilla/websocket"
 )
@@ -26,6 +26,10 @@ import (
 const ansi = "[\u001B\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[a-zA-Z\\d]*)*)?\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PRZcf-ntqry=><~]))"
 
 var re = regexp.MustCompile(ansi)
+
+const iac_ga = "\ufff9"
+
+var iac_ga_re = regexp.MustCompile(iac_ga)
 
 // func GbkToUtf8(s []byte) ([]byte, error) {
 //     reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.GBK.NewDecoder())
@@ -169,6 +173,7 @@ func openTelnet() (t *telnet.Telnet, err error) {
 			InsecureSkipVerify: true,
 		})
 	} else {
+		log.Printf("no tls\n")
 		conn, err = net.Dial("tcp", *muckHost)
 	}
 	if err != nil {
@@ -206,7 +211,7 @@ func telnetProxy(w http.ResponseWriter, r *http.Request) {
 	defer t.Close()
 
 	c.WriteMessage(websocket.TextMessage, []byte(welcomeMsg))
-	
+
 	// Send over codes containing the user's real ip.
 	// 1. Indicate our intention.
 	// t.SendCommand(telnet.WILL)
@@ -257,26 +262,30 @@ func telnetProxy(w http.ResponseWriter, r *http.Request) {
 		defer once.Do(func() { wg.Done() })
 		for {
 			bytes := make([]byte, 1024)
-			if n, err := t.Read(bytes); err != nil {
+			if n, err := t.ReadRaw(bytes); err != nil {
 				log.Printf("Error reading from muck for %s: %v",
 					r.Host, err)
 				break
 			} else {
-				log.Printf("recv:%v\n", bytes)
-				new_bytes := re.ReplaceAll(bytes[:n], []byte(""))
-				if err := SendToWs(c, new_bytes); err != nil {
-					log.Printf("Error sending to ws(%s): %v", r.RemoteAddr, err)
-					break
+				// log.Printf("recv:%v\n", bytes)
+				// // new_bytes := re.ReplaceAll(bytes[:n], []byte(""))
+				// if err := SendToWs(c, bytes[:n]); err != nil {
+				// 	log.Printf("Error sending to ws(%s): %v", r.RemoteAddr, err)
+				// 	break
+				// }
+				new_bytes := Bytes.ReplaceAll(bytes[:n], []byte{0xff,0xf9}, []byte("\r\n"))
+				if (len(new_bytes) != n) {
+					log.Printf("##### (%d->%d)", n, len(new_bytes))
+				}
+				if rbytes, err := GbkToUtf8(new_bytes); err == nil {
+					if err := c.WriteMessage(websocket.TextMessage, rbytes); err != nil {
+						log.Printf("Error sending to ws(%s): %v", r.RemoteAddr, err)
+						break
+					}
+				} else {
+					log.Printf("Error GbkToUtf8: %v", err)
 				}
 			}
-// 			if rbytes, err := GbkToUtf8(bytes); err == nil {
-// 				if err := c.WriteMessage(websocket.TextMessage, rbytes); err != nil {
-// 					log.Printf("Error sending to ws(%s): %v", r.RemoteAddr, err)
-// 					break
-// 				}
-// 			} else {
-// 				log.Printf("Error GbkToUtf8: %v", err)
-// 			}
 		}
 	}()
 
@@ -294,7 +303,7 @@ func main() {
 	utf8 := dec.ConvertString(string(gbkBytes))
 // 	fmt.Println(utf8)
 	log.Printf("starting...[%s] [%s]", utf8, "你好")
-	
+
 	welcomeMsg = utf8
 
 	http.HandleFunc("/", telnetProxy)
@@ -310,8 +319,12 @@ func main() {
 		log.Printf("ListenAndServeTLS:%s", *addr);
 		err := http.ListenAndServeTLS(*addr, "conf/cert.pem", "conf/key.pem", nil)
 		if err != nil {
-			log.Fatal("ListenAndServe: ", err)
+			err := http.ListenAndServe(*addr, nil)
+			if err != nil {
+				log.Fatal("ListenAndServe: ", err)
+			}
+			// log.Fatal("ListenAndServe: ", err)
 		}
 	}
-		
+
 }
