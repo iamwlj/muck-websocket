@@ -8,8 +8,7 @@ import (
 	"net/http"
 // 	"strings"
 	"sync"
-
-   Bytes "bytes"
+	bbytes "bytes"
 //     	"golang.org/x/text/encoding/simplifiedchinese"
 // 	"golang.org/x/text/transform"
 //     	"io/ioutil"
@@ -90,7 +89,7 @@ func SendToWs(con *websocket.Conn, s []byte) error {
 	idx := 0
 	var c byte
 	sz := len(s)
-	log.Printf("SendToWs:%d,%v", sz, s)
+	// log.Printf("SendToWs:%d,%v", sz, s)
 	for idx < sz {
 		c = s[idx]
 		switch state {
@@ -104,7 +103,7 @@ func SendToWs(con *websocket.Conn, s []byte) error {
 						log.Printf("Error sending to ws : %v", err)
 						return err
 					}
-					log.Printf("send[%d:%d]", start, idx)
+					// log.Printf("send[%d:%d]", start, idx)
 					start = idx
 				}
 			}
@@ -273,7 +272,7 @@ func telnetProxy(w http.ResponseWriter, r *http.Request) {
 				// 	log.Printf("Error sending to ws(%s): %v", r.RemoteAddr, err)
 				// 	break
 				// }
-				new_bytes := Bytes.ReplaceAll(bytes[:n], []byte{0xff,0xf9}, []byte("\r\n"))
+				new_bytes := bbytes.ReplaceAll(bytes[:n], []byte{0xff,0xf9}, []byte("\r\n"))
 				if (len(new_bytes) != n) {
 					log.Printf("##### (%d->%d)", n, len(new_bytes))
 				}
