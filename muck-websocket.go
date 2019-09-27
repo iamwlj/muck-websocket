@@ -54,7 +54,7 @@ var dec mahonia.Decoder = mahonia.NewDecoder("GB18030")
 func GbkToUtf8(s []byte) ([]byte, error) {
 // 	return s, nil
 	res := dec.ConvertString(string(s))
-	log.Printf("convert [%s] -> [%s]", string(s), res)
+	// log.Printf("convert [%s] -> [%s]", string(s), res)
 	return []byte(res), nil
 }
 
@@ -137,7 +137,7 @@ func SendToWs(con *websocket.Conn, s []byte) error {
 			log.Printf("Error sending to ws: %v", err)
 			return err
 		}
-		log.Printf("send[%d:%d]", start, idx)
+		// log.Printf("send[%d:%d]", start, idx)
 		start = idx
 	}
 	return nil
